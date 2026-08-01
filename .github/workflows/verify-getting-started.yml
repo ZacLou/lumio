@@ -1,0 +1,113 @@
+name: Verify Getting Started Docs
+
+on:
+  schedule:
+    # Runs every Monday at 07:00 UTC
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: verify-getting-started
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  verify-getting-started:
+    name: Verify docs/getting-started.md instructions
+    runs-on: ubuntu-latest
+
+    steps:
+      # ---------------------------------------------------------------
+      # Step 1 — Clone and install (docs section 1)
+      # ---------------------------------------------------------------
+      - name: "Step 1: Clone repository"
+        uses: actions/checkout@v4
+
+      - name: "Step 1: Enable corepack"
+        run: corepack enable
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: "Step 1: pnpm install"
+        run: pnpm install --frozen-lockfile
+
+      # ---------------------------------------------------------------
+      # Step 2 — Start local infrastructure (docs section 2)
+      # ---------------------------------------------------------------
+      - name: "Step 2: docker compose up -d"
+        run: docker compose -f docker/docker-compose.dev.yml up -d
+
+      - name: "Step 2: Wait for Postgres to be healthy"
+        run: |
+          for i in $(seq 1 20); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' \
+              $(docker compose -f docker/docker-compose.dev.yml ps -q postgres))
+            echo "postgres health: $STATUS"
+            [ "$STATUS" = "healthy" ] && break
+            sleep 3
+          done
+          [ "$STATUS" = "healthy" ] || { echo "Postgres never became healthy"; exit 1; }
+
+      - name: "Step 2: Wait for Redis to be healthy"
+        run: |
+          for i in $(seq 1 20); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' \
+              $(docker compose -f docker/docker-compose.dev.yml ps -q redis))
+            echo "redis health: $STATUS"
+            [ "$STATUS" = "healthy" ] && break
+            sleep 3
+          done
+          [ "$STATUS" = "healthy" ] || { echo "Redis never became healthy"; exit 1; }
+
+      # ---------------------------------------------------------------
+      # Step 3 — Configure environment variables (docs section 3)
+      # ---------------------------------------------------------------
+      - name: "Step 3: Copy env files"
+        run: |
+          cp apps/api/.env.example apps/api/.env
+          cp apps/dashboard/.env.example apps/dashboard/.env.local
+
+      # ---------------------------------------------------------------
+      # Step 4 — Run database migrations (docs section 4)
+      # ---------------------------------------------------------------
+      - name: "Step 4: pnpm --filter api prisma:migrate"
+        env:
+          DATABASE_URL: postgresql://lumio:lumio@localhost:5432/lumio_dev
+          REDIS_URL: redis://localhost:6379
+        run: pnpm --filter api prisma:migrate
+
+      # ---------------------------------------------------------------
+      # Step 5 — Verify dev script resolves (docs section 5)
+      #
+      # We start `pnpm dev` with a short timeout and treat a clean
+      # start-up (no non-zero exit before the timeout) as a pass.
+      # A missing script, unresolvable import, or broken entry-point
+      # will fail immediately and cause this step to fail.
+      # ---------------------------------------------------------------
+      - name: "Step 5: Verify pnpm dev starts without errors"
+        env:
+          DATABASE_URL: postgresql://lumio:lumio@localhost:5432/lumio_dev
+          REDIS_URL: redis://localhost:6379
+        run: |
+          timeout 60 pnpm dev || EXIT=$?
+          # timeout exits 124 when it kills the process — that is the
+          # expected outcome (apps started successfully then were stopped).
+          # Any other non-zero code means a real failure.
+          if [ "${EXIT:-0}" -ne 0 ] && [ "${EXIT:-0}" -ne 124 ]; then
+            echo "pnpm dev exited with unexpected code ${EXIT}"
+            exit "${EXIT}"
+          fi
+
+      # ---------------------------------------------------------------
+      # Tear-down
+      # ---------------------------------------------------------------
+      - name: Tear down Docker services
+        if: always()
+        run: docker compose -f docker/docker-compose.dev.yml down -v
