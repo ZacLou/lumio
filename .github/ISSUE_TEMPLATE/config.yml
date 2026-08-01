@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/lumio-network/lumio/discussions
+    about: Ask questions, propose ideas, or start an RFC before a large PR.
+  - name: 🔒 Report a security vulnerability
+    url: https://github.com/lumio-network/lumio/security/advisories/new
+    about: Please do not file public issues for security vulnerabilities — see SECURITY.md.

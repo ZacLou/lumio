@@ -1,0 +1,75 @@
+# Label definitions for the Lumio repository.
+# Applied via scripts/setup-labels.sh (uses `gh label create`).
+# Format matches github-label-sync / gh CLI conventions: name, color (no #), description.
+
+- name: "good first issue"
+  color: "7057ff"
+  description: "Small, well-scoped, good entry point for new contributors"
+
+- name: "help wanted"
+  color: "008672"
+  description: "Maintainers are actively looking for community help"
+
+- name: "bug"
+  color: "d73a4a"
+  description: "Confirmed defect in existing behavior"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "New feature or improvement to existing behavior"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "Docs-only change: README, guides, API reference, comments"
+
+- name: "security"
+  color: "b60205"
+  description: "Security-relevant; may require private disclosure first (see SECURITY.md)"
+
+- name: "blockchain"
+  color: "5319e7"
+  description: "Soroban contracts or Stellar network integration"
+
+- name: "frontend"
+  color: "fbca04"
+  description: "apps/dashboard, apps/admin, packages/ui"
+
+- name: "backend"
+  color: "1d76db"
+  description: "apps/api"
+
+- name: "design"
+  color: "e99695"
+  description: "UX/UI, design system, needs design input before implementation"
+
+- name: "infra"
+  color: "c2e0c6"
+  description: "CI/CD, Docker, deployment, tooling"
+
+- name: "sdk"
+  color: "bfd4f2"
+  description: "packages/sdk"
+
+- name: "needs-design"
+  color: "f9d0c4"
+  description: "Blocked until UX/UI direction is decided"
+
+- name: "needs-discussion"
+  color: "d4c5f9"
+  description: "Scope or approach isn't settled; needs an RFC/Discussion first"
+
+- name: "breaking-change"
+  color: "e11d21"
+  description: "Introduces a breaking API, schema, or contract-interface change"
+
+- name: "triage"
+  color: "ededed"
+  description: "Newly filed, not yet reviewed by a maintainer"
+
+- name: "wontfix"
+  color: "ffffff"
+  description: "This will not be worked on"
+
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or PR already exists"

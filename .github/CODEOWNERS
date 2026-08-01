@@ -1,0 +1,11 @@
+# Default owners for everything not matched below
+*                       @lumio-network/maintainers
+
+/contracts/             @lumio-network/contracts-team
+/apps/api/               @lumio-network/backend-team
+/apps/dashboard/         @lumio-network/frontend-team
+/apps/admin/             @lumio-network/frontend-team
+/packages/ui/            @lumio-network/design-team
+/docs/                   @lumio-network/docs-team
+/.github/                @lumio-network/maintainers
+SECURITY.md              @lumio-network/security-team

@@ -1,0 +1,59 @@
+name: ✨ Feature Request
+description: Propose a new feature or enhancement
+title: "feat: <short description>"
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For large or architecturally significant features (new modules, contract redesigns, breaking API changes), please start a [Discussion](https://github.com/lumio-network/lumio/discussions) first.
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Related module
+      options:
+        - Organization Management
+        - Group Wallets / Treasury
+        - Savings
+        - Loans
+        - Dividends
+        - Governance
+        - Reporting
+        - Notifications
+        - Analytics
+        - SDK
+        - Design System
+        - Other / cross-cutting
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the user need or pain point.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: I've checked the ROADMAP.md to see if this is already planned.
+          required: true

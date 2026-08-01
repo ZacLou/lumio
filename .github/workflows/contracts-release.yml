@@ -1,0 +1,37 @@
+name: Contracts Release
+
+on:
+  push:
+    tags:
+      - "contracts-v*"
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32v1-none
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts
+
+      - name: Build all contracts (release, wasm)
+        run: cargo build --target wasm32v1-none --release --workspace
+
+      - name: Collect wasm artifacts
+        run: |
+          mkdir -p ../dist
+          find target/wasm32v1-none/release -maxdepth 1 -name '*.wasm' -exec cp {} ../dist \;
+
+      - name: Publish GitHub Release with wasm artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.wasm
+          generate_release_notes: true

@@ -1,0 +1,1079 @@
+[
+  {
+    "title": "Design org/member/role Prisma schema",
+    "body": "Define the initial Prisma schema for Organization, Member, Role, and Invite entities. Should support org-scoped roles (admin, treasurer, member, auditor) and branch/committee sub-grouping planned for v1.0 (leave a nullable branchId for forward compatibility).",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Implement organization creation API endpoint",
+    "body": "POST /orgs \u2014 creates an organization, assigns the creator as admin. Validate name/slug uniqueness. Add request validation with class-validator DTOs.",
+    "labels": [
+      "backend",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Implement member invite flow (email-based)",
+    "body": "POST /orgs/:id/invites \u2014 generates a signed invite token, sends an email via the notification worker. Invite acceptance creates a Member record with a default role.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Add role-based access control (RBAC) guard for API routes",
+    "body": "NestJS guard that checks the requesting member's org-scoped role against a route's required permission. Should be declarative via a decorator, e.g. @RequireRole('treasurer').",
+    "labels": [
+      "backend",
+      "security"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Org switcher UI component",
+    "body": "Dashboard header component to switch between organizations a member belongs to. Persists last-selected org in a cookie.",
+    "labels": [
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Design branch & committee data model",
+    "body": "Extend the org schema to support branches (e.g. regional chapters) and committees (e.g. loan committee) with their own scoped permissions.",
+    "labels": [
+      "backend",
+      "needs-discussion"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Audit log for org-level admin actions",
+    "body": "Record who changed what (role changes, member removal, settings changes) with timestamp and actor. Expose a read-only audit log view for admins.",
+    "labels": [
+      "backend",
+      "security"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "CSV bulk-import for existing member rosters",
+    "body": "Let a new org admin upload a CSV of existing members (name, phone, email) during onboarding instead of inviting one by one.",
+    "labels": [
+      "backend",
+      "enhancement",
+      "help wanted"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Extend treasury contract: multisig withdrawal with threshold approval",
+    "body": "Add withdraw() requiring N-of-M signer approval. Store signer set and threshold in contract storage, gated by set_signers()/set_threshold() callable only by governance.",
+    "labels": [
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Treasury contract: spending policy limits",
+    "body": "Support per-period spending caps (e.g. max withdrawal per day) enforced at the contract level, configurable by governance.",
+    "labels": [
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Wire treasury.deposit to Stellar Asset Contract token transfer",
+    "body": "Currently the treasury scaffold only records a balance; wire it to actually move a configured SAC token (e.g. USDC) using the token client interface.",
+    "labels": [
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "API: build & submit signed treasury transactions",
+    "body": "Backend service that builds a Soroban transaction envelope for deposit/withdraw, returns it unsigned to the client for member signing, then submits once signed.",
+    "labels": [
+      "backend",
+      "blockchain"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Reconciliation worker: on-chain events to off-chain ledger",
+    "body": "BullMQ job that polls/subscribes to Soroban contract events and reconciles them against pending off-chain records, marking them confirmed/failed.",
+    "labels": [
+      "backend",
+      "blockchain"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Treasury balance widget (dashboard)",
+    "body": "Read-only widget showing current treasury balance, sourced from the API which itself reconciles against the contract.",
+    "labels": [
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Freighter wallet connect flow",
+    "body": "Integrate Freighter (or compatible) wallet connection for member-signed actions (deposits, votes). Handle 'wallet not installed' gracefully with install prompt.",
+    "labels": [
+      "frontend",
+      "blockchain",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Contract: emit structured events for deposit/withdraw",
+    "body": "Ensure treasury contract emits typed events with enough data for the reconciliation worker to avoid extra RPC calls.",
+    "labels": [
+      "blockchain",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Support multiple asset types per treasury (XLM + stablecoins)",
+    "body": "Extend treasury balance tracking to be per-asset rather than a single implicit asset.",
+    "labels": [
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Treasury contract audit prep: threat model doc",
+    "body": "Write a threat model for the treasury contract (privileged functions, trust assumptions, failure modes) ahead of the external audit gate in ROADMAP v0.5.",
+    "labels": [
+      "security",
+      "documentation",
+      "blockchain"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Savings cycle data model & API",
+    "body": "Model recurring contribution cycles (weekly/monthly, fixed amount or flexible) scoped to a group within an org.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Record a manual contribution (cash entry, non-blockchain)",
+    "body": "For groups not yet fully on-chain: let a treasurer record a contribution received off-platform, still reflected in reporting/analytics.",
+    "labels": [
+      "backend",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Contribution reminder scheduling",
+    "body": "BullMQ recurring job that checks upcoming/missed contributions and enqueues notification jobs (email/SMS) ahead of the due date.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Savings cycle creation UI",
+    "body": "Admin-facing form to configure a new contribution cycle: frequency, amount, start/end date, penalty rules.",
+    "labels": [
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Member contribution history view",
+    "body": "Dashboard page showing a member's own contribution history for a given cycle, with on-time/late indicators.",
+    "labels": [
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Penalty calculation for late/missed contributions",
+    "body": "Configurable penalty rules (flat fee or percentage) applied automatically when a contribution is marked late, with an admin override path.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Savings analytics: cycle completion rate",
+    "body": "Compute and expose the percentage of members who completed a cycle on time, for the analytics dashboard.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Flexible/variable contribution amounts",
+    "body": "Support cycles where members can contribute a variable amount above a minimum, rather than only fixed amounts.",
+    "labels": [
+      "backend",
+      "enhancement",
+      "help wanted"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "SMS reminder provider integration (Africa's Talking or similar)",
+    "body": "Pluggable SMS provider interface plus a first concrete implementation, used by the reminder job.",
+    "labels": [
+      "backend",
+      "enhancement",
+      "help wanted"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "CSV export of a cycle's contribution history",
+    "body": "Let a treasurer export a completed cycle's contributions as CSV for offline record-keeping.",
+    "labels": [
+      "backend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Loan request data model & API",
+    "body": "Model loan requests: amount, purpose, requested term, requesting member, status (pending/approved/rejected/disbursed/repaid).",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Guarantor flow: request & confirm guarantorship",
+    "body": "A borrower nominates one or more guarantors; guarantors must explicitly confirm before the loan request can move to committee review.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Loan approval workflow (committee voting)",
+    "body": "Support single-approver and committee-quorum approval modes, configurable per org.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Repayment schedule generator",
+    "body": "Given principal, interest rate, and term, generate an amortization schedule (equal installments to start; reducing-balance as a stretch goal).",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Interest calculation module",
+    "body": "Implement flat-rate and reducing-balance interest calculation as pure, well-tested functions in packages/utilities.",
+    "labels": [
+      "backend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Overdue loan tracking & flagging",
+    "body": "Scheduled job to flag installments past due, update loan status, and notify borrower + guarantors.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Loan request UI (borrower flow)",
+    "body": "Multi-step form: amount/purpose, guarantor selection, review & submit.",
+    "labels": [
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Loan committee review UI",
+    "body": "Queue view for committee members to review pending loan requests and vote/approve.",
+    "labels": [
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Guarantor liability display",
+    "body": "Show a member their total outstanding guarantor exposure across all loans they've backed, so they understand their risk before confirming a new one.",
+    "labels": [
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Loan repayment recording (manual + on-chain)",
+    "body": "Support recording a repayment both as a manual entry and as a reconciled on-chain treasury deposit tagged to a specific loan.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Design dividends contract: pull-based claim model",
+    "body": "Contract design doc: how profit pools are funded, how a member's share is computed, and how claims are made (pull vs. push), favoring pull for gas/complexity reasons.",
+    "labels": [
+      "blockchain",
+      "needs-discussion"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Implement dividends contract: fund pool & claim",
+    "body": "fund_pool() to add to a distribution pool, claim() for a member to withdraw their computed share. Must be re-entrancy safe and idempotent per distribution round.",
+    "labels": [
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Dividend share calculation: proportional to contributions",
+    "body": "Compute a member's dividend share proportional to their recorded contributions over a period, as the default (configurable) distribution formula.",
+    "labels": [
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Dividends contract unit tests: edge cases",
+    "body": "Test zero-balance members, rounding remainders, double-claim prevention, and claims after a member has left the org.",
+    "labels": [
+      "blockchain",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Dividend distribution history UI",
+    "body": "Member-facing view of past dividend distributions and their claim status.",
+    "labels": [
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Admin flow: initiate a dividend distribution round",
+    "body": "Treasurer/admin UI to configure and trigger a new distribution round, with a confirmation step showing computed per-member shares before execution.",
+    "labels": [
+      "frontend",
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Dividend rounding remainder handling",
+    "body": "Decide and implement a policy for leftover remainder from integer division (e.g. carry to next round vs. send to treasury reserve).",
+    "labels": [
+      "blockchain",
+      "needs-discussion"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Dividends contract audit prep",
+    "body": "Threat model + test coverage report ahead of the v0.5 external audit gate.",
+    "labels": [
+      "security",
+      "blockchain",
+      "documentation"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Design governance contract: proposal lifecycle",
+    "body": "Design doc for proposal states (draft/active/passed/rejected/executed/expired), voting window, and quorum calculation.",
+    "labels": [
+      "blockchain",
+      "needs-discussion"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Implement governance contract: create & vote on proposals",
+    "body": "propose(), vote(), and tally logic with configurable quorum and voting period.",
+    "labels": [
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Governance contract: execute approved treasury actions",
+    "body": "Cross-contract call from governance to treasury to execute an approved spending proposal once quorum + approval threshold are met.",
+    "labels": [
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Voting power model: one-member-one-vote vs. contribution-weighted",
+    "body": "RFC + implementation for how voting power is computed; needs a Discussion before implementation given the tradeoffs.",
+    "labels": [
+      "blockchain",
+      "needs-discussion"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Proposal creation & voting UI",
+    "body": "Member-facing UI to browse active proposals, view details, and cast a vote (wallet-signed).",
+    "labels": [
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Governance contract: timelock for contract upgrades",
+    "body": "Require a timelock delay between a governance-approved upgrade and its execution, so members have time to react.",
+    "labels": [
+      "blockchain",
+      "security"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Quorum edge case tests: low-participation proposals",
+    "body": "Test behavior when turnout is below quorum at the voting deadline (should expire, not silently pass).",
+    "labels": [
+      "blockchain",
+      "good first issue"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Governance contract audit prep",
+    "body": "Threat model + test coverage ahead of the v1.0 audit gate.",
+    "labels": [
+      "security",
+      "blockchain",
+      "documentation"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Treasury dashboard: inflows/outflows chart",
+    "body": "Time-series chart of treasury inflows vs. outflows over a selectable period.",
+    "labels": [
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Treasury dashboard: reserves indicator",
+    "body": "Show current reserve level against a configured target reserve, with a visual warning state when below target.",
+    "labels": [
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Expense recording & categorization",
+    "body": "Let a treasurer record non-loan, non-dividend expenses with categories, for accurate treasury dashboard reporting.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Treasury dashboard: transaction drill-down",
+    "body": "Click into a treasury dashboard chart point to see the underlying transactions.",
+    "labels": [
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Investment tracking (external to on-chain treasury)",
+    "body": "Track group investments held outside the Stellar treasury (e.g. land, equipment) for a complete net-worth picture in reporting.",
+    "labels": [
+      "backend",
+      "enhancement",
+      "help wanted"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Treasury dashboard: mobile-responsive layout pass",
+    "body": "Audit and fix the treasury dashboard for small-screen usability.",
+    "labels": [
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Monthly report generation (PDF)",
+    "body": "Scheduled job that generates a monthly org financial summary as PDF (contributions, loans, treasury balance) and stores it for download.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Excel export for contribution/loan data",
+    "body": "Add .xlsx export alongside PDF for members who want to work with the data further.",
+    "labels": [
+      "backend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Annual report template",
+    "body": "Design and implement a yearly summary report layout, distinct from the monthly one.",
+    "labels": [
+      "backend",
+      "design",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Audit report: full transaction trail export",
+    "body": "Export every recorded transaction (on-chain + manual) for a given period, formatted for external auditor review.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Report generation queue & retry handling",
+    "body": "Ensure report generation jobs (which can be slow for large orgs) are queued, retried on failure, and don't block API request threads.",
+    "labels": [
+      "backend",
+      "infra"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Report download UI & history",
+    "body": "Dashboard page listing previously generated reports with download links.",
+    "labels": [
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Localized report templates (starting with currency formatting)",
+    "body": "Support locale-aware number/currency formatting in generated reports as a first step toward full i18n in v2.0.",
+    "labels": [
+      "backend",
+      "enhancement",
+      "help wanted"
+    ],
+    "milestone": "v2.0 \u2014 Ecosystem & Scale"
+  },
+  {
+    "title": "Notification provider abstraction (email/SMS/push)",
+    "body": "Define a common interface so email, SMS, and push providers can be swapped without touching call sites.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Email notification provider (SMTP/transactional email service)",
+    "body": "First concrete implementation of the notification provider interface.",
+    "labels": [
+      "backend",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "In-app notification center",
+    "body": "Bell icon + dropdown showing recent in-app notifications, with read/unread state.",
+    "labels": [
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Notification preferences per member",
+    "body": "Let members opt in/out of specific notification types and channels.",
+    "labels": [
+      "backend",
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Push notification provider (web push)",
+    "body": "Implement web push as another notification provider, gated behind user opt-in.",
+    "labels": [
+      "backend",
+      "enhancement",
+      "help wanted"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Notification templates system",
+    "body": "Centralize notification copy as templates with variable interpolation, so wording changes don't require code changes.",
+    "labels": [
+      "backend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Digest notifications (daily/weekly summary)",
+    "body": "Optional digest mode that batches non-urgent notifications instead of sending immediately.",
+    "labels": [
+      "backend",
+      "enhancement",
+      "help wanted"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Analytics event pipeline",
+    "body": "Lightweight internal event tracking (contribution made, loan approved, vote cast) feeding into aggregate tables for the analytics dashboard.",
+    "labels": [
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Member activity analytics view",
+    "body": "Show org admins member engagement over time (contributions, votes, logins).",
+    "labels": [
+      "frontend",
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Loan statistics dashboard",
+    "body": "Default/on-time repayment rates, average loan size, and portfolio-at-risk metrics.",
+    "labels": [
+      "frontend",
+      "backend",
+      "enhancement"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Treasury analytics: growth over time",
+    "body": "Chart treasury balance growth over time with configurable date ranges.",
+    "labels": [
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Contribution analytics: cohort comparison",
+    "body": "Compare contribution consistency across different savings groups within the same org.",
+    "labels": [
+      "frontend",
+      "backend",
+      "enhancement",
+      "help wanted"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "Analytics data export API",
+    "body": "Expose the underlying analytics aggregates via API for orgs that want to build custom dashboards.",
+    "labels": [
+      "backend",
+      "sdk",
+      "enhancement"
+    ],
+    "milestone": "v2.0 \u2014 Ecosystem & Scale"
+  },
+  {
+    "title": "Analytics dashboard performance: materialized views",
+    "body": "Move slow aggregate queries to materialized views refreshed on a schedule, once real usage data shows query latency issues.",
+    "labels": [
+      "backend",
+      "infra",
+      "help wanted"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "SDK: TypeScript client scaffold for the API",
+    "body": "Generate/hand-write a typed client for core API endpoints (orgs, savings, loans) as the foundation of @lumio/sdk.",
+    "labels": [
+      "sdk",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "SDK: Soroban transaction-building helpers",
+    "body": "Wrap common Soroban transaction construction (deposit, vote, claim dividend) behind simple SDK functions.",
+    "labels": [
+      "sdk",
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "SDK: contract event subscription helper",
+    "body": "Convenience wrapper for subscribing to/polling Soroban contract events, used by both the API reconciliation worker and third-party integrators.",
+    "labels": [
+      "sdk",
+      "blockchain",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "SDK: publish to npm as @lumio/sdk",
+    "body": "Set up the package.json, build config, and CI step to publish the SDK independently of the rest of the monorepo.",
+    "labels": [
+      "sdk",
+      "infra"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "SDK: usage example \u2014 create org & record a contribution",
+    "body": "A runnable example under examples/ showing the full flow end-to-end in under 30 lines.",
+    "labels": [
+      "sdk",
+      "documentation",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "SDK: React hooks package",
+    "body": "Optional @lumio/sdk-react package with hooks (useTreasuryBalance, useProposals) for consumers building on React.",
+    "labels": [
+      "sdk",
+      "frontend",
+      "enhancement",
+      "help wanted"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "SDK: error handling & typed error classes",
+    "body": "Replace generic thrown errors with typed error classes so SDK consumers can handle specific failure modes.",
+    "labels": [
+      "sdk",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "SDK: Rust client for third-party integrations",
+    "body": "Rust equivalent of the TypeScript SDK, for integrators working outside the JS ecosystem.",
+    "labels": [
+      "sdk",
+      "blockchain",
+      "help wanted"
+    ],
+    "milestone": "v2.0 \u2014 Ecosystem & Scale"
+  },
+  {
+    "title": "Design system: token setup (color, spacing, typography)",
+    "body": "Establish the base design tokens in packages/ui as Tailwind config + CSS variables.",
+    "labels": [
+      "design",
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Design system: Button, Input, Select primitives",
+    "body": "Core form primitives built on shadcn/ui, themed with Lumio's design tokens.",
+    "labels": [
+      "design",
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Design system: data table component",
+    "body": "Reusable sortable/filterable table used across contribution, loan, and report lists.",
+    "labels": [
+      "design",
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Design system: empty states & loading skeletons",
+    "body": "Consistent empty-state and skeleton-loading components for use across the dashboard.",
+    "labels": [
+      "design",
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Design system: Storybook setup",
+    "body": "Add Storybook to packages/ui so components can be developed and reviewed in isolation.",
+    "labels": [
+      "design",
+      "infra",
+      "help wanted"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Accessibility audit of core components",
+    "body": "Run an a11y audit (axe or similar) over packages/ui primitives and fix issues found.",
+    "labels": [
+      "design",
+      "frontend",
+      "help wanted"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Write ADR template & first ADR (on-chain treasury as source of truth)",
+    "body": "Add docs/adr/ with a lightweight ADR template, and write ADR-0001 referenced from docs/architecture.md.",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "API reference documentation (OpenAPI/Swagger)",
+    "body": "Generate and publish OpenAPI docs from the NestJS API, served at /docs.",
+    "labels": [
+      "documentation",
+      "backend",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Contract API reference (per-contract function docs)",
+    "body": "Document each public contract function's parameters, auth requirements, and possible panics, generated from doc comments where possible.",
+    "labels": [
+      "documentation",
+      "blockchain",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Deployment guide: self-hosting with Docker Compose",
+    "body": "Step-by-step guide for a co-op to self-host the full stack, including Stellar network configuration choices.",
+    "labels": [
+      "documentation",
+      "infra"
+    ],
+    "milestone": "v1.0 \u2014 Governance & Production Readiness"
+  },
+  {
+    "title": "FAQ page",
+    "body": "Collect and answer common questions from Discussions/support into a living FAQ doc.",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Troubleshooting guide",
+    "body": "Document common local-dev issues (from the Getting Started troubleshooting section) in more depth as they're reported.",
+    "labels": [
+      "documentation",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Translate README into French",
+    "body": "First localized README, targeting Francophone West African cooperative communities.",
+    "labels": [
+      "documentation",
+      "good first issue",
+      "help wanted"
+    ],
+    "milestone": "v2.0 \u2014 Ecosystem & Scale"
+  },
+  {
+    "title": "Video walkthrough: local dev setup",
+    "body": "Short screen-recording walkthrough of the Getting Started guide, linked from the docs site.",
+    "labels": [
+      "documentation",
+      "help wanted"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Set up Playwright for e2e testing",
+    "body": "Configure Playwright against the dashboard app with a basic smoke-test suite (login, view treasury balance).",
+    "labels": [
+      "infra",
+      "frontend",
+      "enhancement"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Preview deployments for PRs",
+    "body": "Configure preview deploys (Vercel or similar) for apps/dashboard on every PR.",
+    "labels": [
+      "infra",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Terraform module: base infrastructure",
+    "body": "Terraform for the managed Postgres, Redis, and app hosting environment used in staging/production.",
+    "labels": [
+      "infra",
+      "help wanted"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Add Scout static analysis to contracts CI",
+    "body": "Integrate CoinFabrik's Scout (or similar Soroban-focused static analyzer) into the contracts CI job.",
+    "labels": [
+      "infra",
+      "blockchain",
+      "security"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Docker production images",
+    "body": "Multi-stage Dockerfiles for apps/api and apps/dashboard optimized for production (not just the dev compose setup).",
+    "labels": [
+      "infra",
+      "enhancement"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Add bundle-size CI check for frontend apps",
+    "body": "Fail CI (or warn) if a PR significantly increases the dashboard's JS bundle size.",
+    "labels": [
+      "infra",
+      "frontend",
+      "good first issue"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Rate limiting on auth endpoints",
+    "body": "Add rate limiting (e.g. via Redis) to login/OTP endpoints to mitigate brute-force attempts.",
+    "labels": [
+      "backend",
+      "security",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Input validation audit across API DTOs",
+    "body": "Review all NestJS DTOs for missing or weak validation (class-validator decorators), particularly on amount/financial fields.",
+    "labels": [
+      "backend",
+      "security",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Secrets handling review",
+    "body": "Audit how secrets (JWT signing key, provider API keys) are loaded and ensure none can leak into logs or client bundles.",
+    "labels": [
+      "security",
+      "infra"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Add security headers middleware",
+    "body": "Configure standard security headers (CSP, HSTS, X-Content-Type-Options, etc.) for apps/api responses.",
+    "labels": [
+      "backend",
+      "security",
+      "good first issue"
+    ],
+    "milestone": "v0.1 \u2014 Foundations"
+  },
+  {
+    "title": "Dependency vulnerability scanning gate in CI",
+    "body": "Fail CI on newly introduced high/critical vulnerabilities from `pnpm audit` / `cargo audit`.",
+    "labels": [
+      "infra",
+      "security"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  },
+  {
+    "title": "Document key management options for treasurers",
+    "body": "Compare self-custody vs. custodial-fallback signing UX for non-technical treasurers, feeding the open question in docs/architecture.md.",
+    "labels": [
+      "documentation",
+      "security",
+      "needs-discussion"
+    ],
+    "milestone": "v0.5 \u2014 Core Financial Loop"
+  }
+]

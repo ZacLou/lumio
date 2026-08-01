@@ -1,0 +1,7 @@
+{
+  "apps/api": "0.1.0",
+  "apps/dashboard": "0.1.0",
+  "apps/admin": "0.1.0",
+  "packages/sdk": "0.1.0",
+  "packages/ui": "0.1.0"
+}

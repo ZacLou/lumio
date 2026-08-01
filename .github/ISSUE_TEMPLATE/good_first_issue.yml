@@ -1,0 +1,44 @@
+name: 🌱 Good First Issue
+description: For maintainers - create a well-scoped issue for new contributors
+title: "<area>: <short description>"
+labels: ["good first issue", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to author beginner-friendly issues. Keep scope small (a few hours of work), and be explicit about acceptance criteria so a first-time contributor can succeed without deep codebase context.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why does this matter? Link related files/modules.
+    validations:
+      required: true
+
+  - type: textarea
+    id: task
+    attributes:
+      label: Task
+      description: Exactly what should change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] Tests added/updated
+        - [ ] Docs updated if applicable
+    validations:
+      required: true
+
+  - type: textarea
+    id: pointers
+    attributes:
+      label: Pointers
+      description: Relevant files, similar past PRs, or docs to read first.
+    validations:
+      required: false

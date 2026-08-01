@@ -1,0 +1,82 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior in Lumio
+title: "fix: <short description>"
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report! Please search [existing issues](https://github.com/lumio-network/lumio/issues) first to avoid duplicates.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected component
+      options:
+        - apps/dashboard
+        - apps/admin
+        - apps/api
+        - contracts (Soroban)
+        - packages/sdk
+        - packages/ui
+        - docs
+        - infra/CI
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: |
+        - OS:
+        - Browser/Node version:
+        - Lumio version/commit:
+        - Network (Testnet/Futurenet/Mainnet), if contract-related:
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / screenshots
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this hasn't been reported.
+          required: true
+        - label: This is not a security vulnerability (if it is, see SECURITY.md instead).
+          required: true
