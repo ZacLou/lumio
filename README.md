@@ -114,6 +114,7 @@ Full setup instructions, including Docker-only workflows and Stellar testnet con
 - [Architecture Overview](./docs/architecture.md)
 - [Getting Started](./docs/getting-started.md)
 - [Taking This Live on GitHub](./docs/github-setup.md)
+- [FAQ](./docs/faq.md)
 - [Security Policy](./SECURITY.md)
 - [Governance](./docs/governance.md)
 - [Roadmap](./ROADMAP.md)
